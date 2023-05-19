@@ -1,4 +1,4 @@
-/*Applicativo client-server
+/*Applicativo client-server 
 
 Scrivere un applicativo client-server dove il server salva su un file i dati degli utenti che si collegano seguendo questo protocollo:
 
@@ -17,19 +17,23 @@ Scrivere un applicativo client-server dove il server salva su un file i dati deg
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-#include <pthread.h>
 #include <signal.h>
 #include <netinet/in.h>
+#include <fstream>
+#include <pthread.h>
 #include <atomic>
+#include <semaphore.h>
 
 using namespace std;
 #define MaxClient 2
 
+// DICHIARAZIONE FUNZIONI
 void *connect(void *);
 
 // VARIABILI GLOBALI
-atomic_int countClient;      // contiene il numero di client collegati
-int socketArray[MaxClient];  // contiene i descrittori delle socket dei client
+atomic_int countClient = 0; // contiene il numero di client collegati
+sem_t semaphore;            // Dichiarazione del semaforo
+int socketArray[MaxClient]; // contiene i descrittori delle socket dei client
 
 int main()
 {
@@ -40,12 +44,11 @@ int main()
    char ipServizio[16], input[4];
    int i;
    struct sockaddr_in indirizzoServer, indirizzoClient; // strutture per socket address server e client
+   sem_init(&semaphore, 0, 1);                          // Inizializzazione del semaforo
 
-   
    // decido di rappresentare l'assenza di una socket con il valore '-10'
-   for (i = 0; i < MaxClient; i++) {
+   for (i = 0; i < MaxClient; i++)
       socketArray[i] = -10;
-   }
 
    // Richiesta IP e PORTA sui quali implementare il servizio, inserendo 'd' si ottiene un indirizzo di default (ip '127.0.0.1, porta '2005')
    cout << "Inserisci un indirizzo IP del Server (inserisci 'd' per ottenere indirizzo di default '127.0.0.1'):\n";
@@ -122,7 +125,7 @@ int main()
          { // verifico che non si sia raggiunto il limite di connessioni
 
             // cerco un elemento libero nel vettore di socket collegati
-            while (socketArray[i] != -10) 
+            while (socketArray[i] != -10)
                i = (i + 1) % MaxClient;
 
             // una volta trovato, salvo il valore del descrittore del socket che si è appena collegato e lo passo al thread
@@ -145,9 +148,11 @@ int main()
 
    } while (true);
 
+   sem_destroy(&semaphore); // Distruzione del semaforo
    return 0;
 }
 
+// DEFINIZIONE FUNZIONI
 void *connect(void *clientSoc)
 {
    char nome[24], cognome[24], comunicazione[62];
@@ -193,7 +198,24 @@ void *connect(void *clientSoc)
    cout << "cognome ricevuto: " << cognome << "\n";
 
    // SALVATAGGIO FILE
-   
+   sem_wait(&semaphore); // acquisizione del semaforo
+
+   ofstream file("output.txt", ios::app); // Apriamo il file in modalità di append
+   if (file.is_open())
+   {
+      // Aggiungiamo la stringa al file
+      file << nome << " " << cognome << endl;
+
+      // Chiudiamo il file
+      file.close();
+      cout << "Dati aggiunti al file." << endl;
+   }
+   else
+   {
+      cout << "Impossibile aprire il file." << endl;
+   }
+
+   sem_post(&semaphore); // rilascio del semaforo
 
    strcpy(comunicazione, "Le tue informazioni sono state salvate correttamente");
    if (send(*client, comunicazione, strlen(comunicazione), 0) < 0)

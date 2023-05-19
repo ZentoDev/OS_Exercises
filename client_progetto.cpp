@@ -95,7 +95,7 @@ int main()
     int size_comunicazione = recv(sockServer, bufferComunication, sizeof(bufferComunication), 0);
     if (size_comunicazione <= 0)
     {
-        cerr << "[X] - ERRORE RICEZIONE NOME\n";
+        cerr << "[X] - ERRORE RICEZIONE MESSAGGIO\n";
         close(sockServer);
         return -1;
     }
@@ -113,7 +113,7 @@ int main()
     size_comunicazione = recv(sockServer, bufferComunication, sizeof(bufferComunication), 0);
     if (size_comunicazione <= 0)
     {
-        cerr << "[X] - ERRORE RICEZIONE COGNOME\n";
+        cerr << "[X] - ERRORE RICEZIONE MESSAGGIO DI CONFERMA SALVATAGGIO\n";
         close(sockServer);
         return -1;
     }

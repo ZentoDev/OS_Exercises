@@ -142,6 +142,7 @@ int main()
          else
          {
             cerr << "[X] - E' STATO RAGGIUNTO IL LIMITE DI THREAD ATTIVI CONTEMPORANEAMENTE (" << MaxClient << ")\n\n";
+            close(clientSocket);
             countClient--;
          }
       }

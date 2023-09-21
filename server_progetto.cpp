@@ -63,7 +63,7 @@ int main()
    if (input[0] == 'd')
       PortaS = 2005;
    else
-      PortaS = atoi(input);
+      PortaS = atoi(input);  // atoi() converte una stringa in un intero
 
    // Creiamo il socket per il servizio
    // - famiglia protocolli AF_INET => IPV4
@@ -81,9 +81,9 @@ int main()
 
    // Indichiamo l'interfaccia e la porta di ascolto
    // assegna socket address + controllo
-   indirizzoServer.sin_addr.s_addr = inet_addr(ipServizio);
+   indirizzoServer.sin_addr.s_addr = inet_addr(ipServizio);  // inet_addr() coverte un numero in notazione puntata in un numero a 32 bit
    indirizzoServer.sin_family = AF_INET;
-   indirizzoServer.sin_port = htons(PortaS);
+   indirizzoServer.sin_port = htons(PortaS);  // htons() converte un numero al formato Big-Endian
 
    // Chiedo al sistema operativo di installare il servizio
    // bind + controllo
@@ -131,8 +131,8 @@ int main()
             // una volta trovato, salvo il valore del descrittore del socket che si è appena collegato e lo passo al thread
             socketArray[i] = clientSocket;
             // creazione thread + controllo
-            if (pthread_create(&thread_id, NULL, connect, (void *)&socketArray[i]) < 0)
-            { // Si crea un thread per ogni connessione con un client
+            if (pthread_create(&thread_id, NULL, connect, (void *)&socketArray[i]) < 0) // Si crea un thread per ogni connessione con un client
+            { 
                cerr << "[X] - IMPOSSIBILE CREARE UN THREAD\n\n";
                close(clientSocket);
                countClient--;

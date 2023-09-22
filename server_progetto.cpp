@@ -172,7 +172,7 @@ void *connect(void *clientSoc)
    nome[size_nome] = '\0';
    cout << nome << " si è collegato\n";
 
-   sprintf(comunicazione, "Benvenuto %s, ci sono %d client collegati\n", nome, (int)countClient);
+   sprintf(comunicazione, "Benvenuto %s, ci sono %d client collegati", nome, (int)countClient);
 
    if (send(*client, comunicazione, sizeof(comunicazione), 0) < 0)
    {

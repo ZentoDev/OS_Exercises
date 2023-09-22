@@ -102,7 +102,7 @@ int main()
     bufferComunication[size_comunicazione] = '\0';
     cout << bufferComunication;
 
-    cout << "Inserisci il tuo cognome:\n";
+    cout << "\nInserisci il tuo cognome:\n";
     cout << "> ";
     cin >> cognome;
     if (send(sockServer, cognome, sizeof(cognome), 0) < 0)
@@ -118,7 +118,7 @@ int main()
         return -1;
     }
     bufferComunication[size_comunicazione] = '\0';
-    cout << bufferComunication;
+    cout << bufferComunication << "\n";
 
     return 0;
 }
